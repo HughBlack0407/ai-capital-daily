@@ -135,9 +135,10 @@
     const heroText = content(document.querySelector('.hero p'));
     const period = Array.from(document.querySelectorAll('.strip span')).map(content).join('  ·  ');
     const edition = document.body.dataset.edition || 'weekly';
+    const localFile = location.protocol === 'file:';
     const logo = document.querySelector('.brand-title img');
-    if (logo?.decode) await logo.decode();
-    const sourceUrl = edition === 'weekly' ? location.href : new URL(`weekly/${edition}.html`, logo.src).href;
+    if (!localFile && logo?.decode) await logo.decode();
+    const sourceUrl = document.body.dataset.publicUrl || location.href;
     const footerLines = wrap(measure, `完整内容与可点击原文：${sourceUrl}`, fonts.source, WIDTH - 104);
     const periodLines = wrap(measure, period, fonts.source, WIDTH - 104);
     const HEADER = 230;
@@ -154,7 +155,7 @@
     ctx.fillRect(0, 0, WIDTH, HEADER);
     ctx.fillStyle = '#9b2237';
     ctx.fillRect(0, 0, WIDTH, 7);
-    if (logo?.naturalWidth) ctx.drawImage(logo, 52, 25, 285, 95);
+    if (!localFile && logo?.naturalWidth) ctx.drawImage(logo, 52, 25, 285, 95);
     else drawLines(ctx, ['資本周報'], 52, 35, fonts.title, '#f7f3ea', 40, true);
     drawLines(ctx, ['本周重点'], 52, 128, '700 34px "Microsoft YaHei", sans-serif', '#ffffff', 42, true);
     drawLines(ctx, wrap(ctx, heroText, fonts.source, WIDTH - 104), 52, 174, fonts.source, '#d4d8d9', 25, true);
